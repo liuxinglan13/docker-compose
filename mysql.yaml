@@ -1,0 +1,17 @@
+version: "3"
+services:
+  mysql:
+    image: mysql:5.7
+    restart: always
+    container_name: mysql 
+    hostname: mysql
+    environment:
+      - MYSQL_ROOT_PASSWORD=Rokin@2022
+    volumes:
+      - '/opt/data/apps/mysql/data:/var/lib/mysql'
+    networks:
+      devops:
+        ipv4_address: 172.21.0.101
+networks:
+  devops:
+    external: true
