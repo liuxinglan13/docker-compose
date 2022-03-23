@@ -13,12 +13,12 @@ services:
       - JENKINS_INCREMENTALS_REPO_MIRROR=http://repo.jenkins-ci.org/incrementals
     ports:
       - '8086:8080'
-      - '50000:50000'
-    networks:
-      - 'devops'
+      - '50000:50000' 
     volumes:
       - '/opt/data/apps/jenkinsci/jenkins_home:/var/jenkins_home'
-      - '/opt/data/apps/jenkinsci/apps:/opt/apps'      
+      - '/opt/data/apps/jenkinsci/apps:/opt/apps' 
+    networks:
+      - 'devops'    
 networks:
   devops:
     external: true
