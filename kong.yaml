@@ -19,7 +19,7 @@ services:
     tty: true
     networks:
       devops:
-        ipv4_address: 172.21.21.202
+        ipv4_address: 172.21.22.202
     volumes:
       - /opt/data/apps/kong/postgresql/data:/var/lib/postgresql/data
 
@@ -66,7 +66,7 @@ services:
       - db:db
     networks:
       devops:
-        ipv4_address: 172.21.21.201
+        ipv4_address: 172.21.22.201
     ports:
       - "80:8000/tcp"     # 用以监听HTTP协议的消费接口，实现用户请求的接入。
     #   - "8001:8001/tcp"   # 用以监听HTTP协议的管理接口，此处关闭外部访问
