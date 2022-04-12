@@ -1,0 +1,22 @@
+version: "3"
+services:
+  ldapsso:
+    hostname: openldap
+    image: osxia/openldap
+    container_name: openldap
+    ports:
+      - 389:389
+      - 636:636
+      - 8080:8080
+    environment:
+      - HOSTNAME=localhost
+      - ADMIN=root
+      - CONFIG_PASS=admin
+      - DOMAIN=ldapsso
+      - BASE_DN=dc=ldapsso,dc=com
+    networks:
+      devops:
+        ipv4_address: 172.21.21.101
+networks:
+  devops:
+    external: true
