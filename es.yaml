@@ -7,10 +7,14 @@ services:
       - /opt/data/apps/${ELASTIC_NAME}/certs:/usr/share/elasticsearch/config/certs
       - /opt/data/apps:/opt/data/apps
     user: "0"
+    environment:
+      - ELASTIC_NAME=${ELASTIC_PASSWD}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWD}
+      - KIBANA_PASS=${KIBANA_PASS}
     command: >
-      bash -xe /opt/data/apps/es/init_certs.sh
+      bash /opt/data/apps/es/init_certs.sh
     healthcheck:
-      test: ["CMD-SHELL", "[ -f config/certs/ca.crt ]"]
+      test: ["CMD-SHELL", "[ -f config/certs/ca/ca.crt ]"]
       interval: 1s
       timeout: 5s
       retries: 120
