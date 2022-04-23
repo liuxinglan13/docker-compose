@@ -72,7 +72,8 @@ services:
       timeout: 10s
       retries: 120
     networks:
-      - 'devops'
+      devops:
+        ipv4_address: 172.21.${ELASTIC_RIP}.101
 networks:
   devops:
     external: true  
