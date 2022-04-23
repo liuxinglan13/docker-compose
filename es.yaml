@@ -8,9 +8,9 @@ services:
       - /opt/data/apps:/opt/data/apps
     user: "0"
     command: >
-      bash -c bash /opt/data/apps/es/init_certs.sh
+      bash -xe /opt/data/apps/es/init_certs.sh
     healthcheck:
-      test: ["CMD-SHELL", "[ -f config/certs/${ELASTIC_NAME}/${ELASTIC_NAME}.crt ]"]
+      test: ["CMD-SHELL", "[ -f config/certs/ca.crt ]"]
       interval: 1s
       timeout: 5s
       retries: 120
