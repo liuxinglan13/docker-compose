@@ -7,6 +7,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+      - /etc/hosts:/etc/hosts:ro
       - /opt/data/apps/logstash/pipeline:/usr/share/logstash/pipeline
       - /opt/data/apps/logstash/config:/usr/share/logstash/config
     ports: 

@@ -31,6 +31,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+      - /etc/hosts:/etc/hosts:ro
       - /opt/data/apps/${ELASTIC_NAME}/certs:/usr/share/elasticsearch/config/certs
       - /opt/data/apps/${ELASTIC_NAME}/data:/usr/share/elasticsearch/data
     ports:

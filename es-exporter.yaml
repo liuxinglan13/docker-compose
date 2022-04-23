@@ -8,6 +8,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
+      - /etc/hosts:/etc/hosts:ro
       - /opt/data/apps/es_exporter/certs:/opt/certs
     ports:
       - 9114:9114
