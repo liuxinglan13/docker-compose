@@ -11,6 +11,8 @@ services:
       - JENKINS_SECRET=6e602a895a54522e6a02b6309c391654b6ad2e2f6c4cf72288c6d65a43d71fb0
       - JENKINS_AGENT_NAME=jenkins-build
     volumes:
+      - /etc/localtime:/etc/localtime
+      - /etc/timezone:/etc/timezone
       - '/var/run/docker.sock:/var/run/docker.sock'
       - '/opt/data/apps/jenkins-slave/data:/var/jenkins_home'
     networks:
@@ -18,11 +20,3 @@ services:
 networks:
   devops:
     external: true
-
-
-
-FROM jenkinsci/jnlp-slave:alpine
-USER root
-
-RUN sed -i "s#http://dl-cdn.alpinelinux.org/#http://mirrors.ustc.edu.cn/#g" /etc/apk/repositories
-RUN apk -U add ansible docker openssh sshpass rsync curl

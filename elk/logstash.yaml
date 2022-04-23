@@ -1,0 +1,20 @@
+version: "3"
+services:
+  logstash: 
+    image: docker.elastic.co/logstash/logstash:7.17.3
+    container_name: logstash
+    hostname: logstash 
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /opt/data/apps/logstash/pipeline:/usr/share/logstash/pipeline
+      - /opt/data/apps/logstash/config:/usr/share/logstash/config
+    ports: 
+      - "5044:5044"
+    # mem_limit: 1G
+    networks:
+      - 'devops'
+
+networks:
+  devops:
+    external: true  

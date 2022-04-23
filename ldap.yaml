@@ -8,6 +8,9 @@ services:
       - 389:389
       - 636:636
       - 8080:8080
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - /etc/timezone:/etc/timezone
     environment:
       - HOSTNAME=localhost
       - ADMIN=root

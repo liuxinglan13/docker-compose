@@ -1,0 +1,28 @@
+version: "3"
+services:
+  es_exporter:
+    image: quay.io/prometheuscommunity/elasticsearch-exporter:latest
+    hostname: es_exporter
+    container_name: es_exporter
+    user: "0"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /opt/data/apps/es_exporter/certs:/opt/certs
+    ports:
+      - 9114:9114
+    command:
+      - '--es.all' 
+      - '--es.indices' 
+      - '--es.cluster_settings' 
+      - '--es.indices_settings' 
+      - '--es.shards' 
+      - '--es.snapshots' 
+      - '--es.timeout=10s'
+      - '--es.ca=/opt/certs/ca.crt'
+      - '--es.uri=https://elastic:${ELASTIC_PASS}@${ELASTIC_HOST}'
+    networks:
+      - 'devops'
+networks:
+  devops:
+    external: true  

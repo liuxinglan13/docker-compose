@@ -15,6 +15,8 @@ services:
       - '8086:8080'
       - '50000:50000' 
     volumes:
+      - /etc/localtime:/etc/localtime
+      - /etc/timezone:/etc/timezone
       - '/opt/data/apps/jenkinsci/jenkins_home:/var/jenkins_home'
       - '/opt/data/apps/jenkinsci/apps:/opt/apps' 
     networks:
