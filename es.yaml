@@ -8,9 +8,9 @@ services:
       - /opt/data/apps:/opt/data/apps
     user: "0"
     environment:
-      - ELASTIC_NAME=${ELASTIC_PASSWD}
+      - ELASTIC_NAME=${ELASTIC_NAME}
       - ELASTIC_PASSWORD=${ELASTIC_PASSWD}
-      - KIBANA_PASS=${KIBANA_PASS}
+      - KIBANA_PASSWD=${KIBANA_PASSWD}
     command: >
       bash /opt/data/apps/es/init_certs.sh
     healthcheck:
