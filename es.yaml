@@ -36,6 +36,7 @@ services:
     ports:
       - 9200:9200
       - 9300:9300
+    user: "0"
     environment:
       - node.name=${ELASTIC_NAME}
       - cluster.name=es-docker-cluster
