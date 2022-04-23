@@ -14,7 +14,7 @@ services:
     command: >
       bash /opt/data/apps/es/init_certs.sh
     healthcheck:
-      test: ["CMD-SHELL", "[ -f config/certs/ca/ca.crt ]"]
+      test: ["CMD-SHELL", "[ -f config/certs/ca.crt ]"]
       interval: 1s
       timeout: 5s
       retries: 120
