@@ -1,6 +1,32 @@
 version: "3"
 services:
+  logstash_setup:
+    image: docker.elastic.co/logstash/logstash:7.17.3
+    volumes:
+      - /opt/data/apps:/opt/data/apps
+    user: "0"
+    command: >
+      bash -c '
+        apt-get -y install netcat-traditional
+        mkdir -p /opt/data/apps/logstash
+        cp -r -d -p config /opt/data/apps/logstash
+        cp -r -d -p pipeline /opt/data/apps/logstash
+        chown -R 1000:1000 /opt/data/apps/logstash/config
+        chown -R 1000:1000 /opt/data/apps/logstash/pipeline
+        until nc -w 10 -z ${TARGET_IP} 5044 > /dev/null 2>&1; do sleep 30; done;
+      '
+    healthcheck:
+      test: ["CMD-SHELL", "[ -d /opt/data/apps/logstash/pipeline ]"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+    networks:
+      - 'devops'
+
   logstash: 
+    depends_on:
+      logstash_setup:
+        condition: service_healthy
     image: docker.elastic.co/logstash/logstash:7.17.3
     container_name: logstash
     hostname: logstash 
