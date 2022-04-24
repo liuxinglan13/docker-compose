@@ -33,7 +33,7 @@ services:
       - /opt/data/apps/${ELASTIC_NAME}/data:/usr/share/elasticsearch/data
     user: "0"
     environment:
-      - node.name=${ELASTIC_NAME}
+      - node.name=${ELASTIC_NAME}.devops.rokin.cn
       - cluster.name=es-docker-cluster
       - cluster.initial_master_nodes=${ELASTIC_MASTER}
       - discovery.seed_hosts=${ELASTIC_SEED}
