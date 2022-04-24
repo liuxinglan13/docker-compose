@@ -4,7 +4,6 @@ services:
   setup:
     image: docker.elastic.co/elasticsearch/elasticsearch:7.17.3
     volumes:
-      - /opt/data/apps/${ELASTIC_NAME}/certs:/usr/share/elasticsearch/config/certs
       - /opt/data/apps:/opt/data/apps
     user: "0"
     environment:
@@ -12,9 +11,9 @@ services:
       - ELASTIC_PASSWORD=${ELASTIC_PASSWD}
       - KIBANA_PASSWD=${KIBANA_PASSWD}
     command: >
-      bash /opt/data/apps/es/init_certs.sh
+      bash /opt/data/apps/es/init_check.sh
     healthcheck:
-      test: ["CMD-SHELL", "[ -f config/certs/ca.crt ]"]
+      test: ["CMD-SHELL", "[ -f /opt/data/apps/es_installed ]"]
       interval: 1s
       timeout: 5s
       retries: 120
@@ -33,7 +32,6 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - /etc/hosts:/etc/hosts:ro
-      - /opt/data/apps/${ELASTIC_NAME}/certs:/usr/share/elasticsearch/config/certs
       - /opt/data/apps/${ELASTIC_NAME}/data:/usr/share/elasticsearch/data
     # ports:
     #   - 9200:9200
@@ -47,16 +45,6 @@ services:
       - ELASTIC_PASSWORD=${ELASTIC_PASSWD}
       - bootstrap.memory_lock=true
       - xpack.security.enabled=true
-      - xpack.security.http.ssl.enabled=true
-      - xpack.security.http.ssl.key=certs/${ELASTIC_NAME}.key
-      - xpack.security.http.ssl.certificate=certs/${ELASTIC_NAME}.crt
-      - xpack.security.http.ssl.certificate_authorities=certs/ca.crt
-      - xpack.security.http.ssl.verification_mode=certificate
-      - xpack.security.transport.ssl.enabled=true
-      - xpack.security.transport.ssl.key=certs/${ELASTIC_NAME}.key
-      - xpack.security.transport.ssl.certificate=certs/${ELASTIC_NAME}.crt
-      - xpack.security.transport.ssl.certificate_authorities=certs/ca.crt
-      - xpack.security.transport.ssl.verification_mode=certificate
       - "${ELASTIC_JAVA}"
     # mem_limit: 1G
     network_mode: host
@@ -68,7 +56,7 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl -s --cacert config/certs/ca/ca.crt https://localhost:9200 | grep -q 'missing authentication credentials'",
+          "curl -s http://localhost:9200 | grep -q 'missing authentication credentials'",
         ]
       interval: 10s
       timeout: 10s
