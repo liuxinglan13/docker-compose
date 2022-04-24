@@ -1,5 +1,25 @@
 version: "3"
 services:
+  kibana_setup:
+    image: docker.elastic.co/logstash/logstash:7.17.3
+    volumes:
+      - /opt/data/apps:/opt/data/apps
+    user: "0"
+    command: >
+      bash -c '
+        apt-get -y install netcat-traditional
+        mkdir -p /opt/data/apps/kibana/data
+        chown -R 1000:1000 /opt/data/apps/kibana/data
+        until nc -w 10 -z ${TARGET_IP} 5601 > /dev/null 2>&1; do sleep 30; done;
+      '
+    healthcheck:
+      test: ["CMD-SHELL", "[ -d /opt/data/apps/kibana/data ]"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+    networks:
+      - 'devops'
+
   kibana:
     image: docker.elastic.co/kibana/kibana:7.17.3
     hostname: kibana
@@ -8,16 +28,16 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - /etc/hosts:/etc/hosts:ro
-      - /opt/data/apps/kibana/certs:/usr/share/kibana/config/certs
+      # - /opt/data/apps/kibana/certs:/usr/share/kibana/config/certs
       - /opt/data/apps/kibana/data:/usr/share/kibana/data
     ports:
       - 5601:5601
     environment:
       - SERVERNAME=kibana
-      - ELASTICSEARCH_HOSTS=https://${ELASTIC_HOST}
+      - ELASTICSEARCH_HOSTS=http://${ELASTIC_HOST}
       - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=${KIBANA_PASS}
-      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca.crt
+      # - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca.crt
     # mem_limit: 1G
     healthcheck:
       test:
