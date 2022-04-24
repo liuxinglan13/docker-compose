@@ -21,7 +21,7 @@ services:
       - '--es.snapshots' 
       - '--es.timeout=10s'
       # - '--es.ca=/opt/certs/ca.crt'
-      - '--es.uri=https://elastic:${ELASTIC_PASSWD}@${ELASTIC_HOST}'
+      - '--es.uri=http://elastic:${ELASTIC_PASSWD}@${ELASTIC_HOST}'
     networks:
       - 'devops'
 networks:
