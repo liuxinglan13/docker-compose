@@ -18,8 +18,9 @@ services:
       interval: 1s
       timeout: 5s
       retries: 120
-    networks:
-      - 'devops'
+    network_mode: host
+    # networks:
+    #   - 'devops'
 
   elastic:
     depends_on:
@@ -34,9 +35,9 @@ services:
       - /etc/hosts:/etc/hosts:ro
       - /opt/data/apps/${ELASTIC_NAME}/certs:/usr/share/elasticsearch/config/certs
       - /opt/data/apps/${ELASTIC_NAME}/data:/usr/share/elasticsearch/data
-    ports:
-      - 9200:9200
-      - 9300:9300
+    # ports:
+    #   - 9200:9200
+    #   - 9300:9300
     user: "0"
     environment:
       - node.name=${ELASTIC_NAME}
