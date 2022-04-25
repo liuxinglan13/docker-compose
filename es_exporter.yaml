@@ -20,8 +20,8 @@ services:
       - '--es.shards' 
       - '--es.snapshots' 
       - '--es.timeout=10s'
-      - '--es.ca=/opt/certs/elastic-ca.pem'
-      - '--es.uri=https://elastic:${ELASTIC_PASSWD}@${ELASTIC_HOST}'
+      # - '--es.ca=/opt/certs/elastic-ca.pem'
+      - '--es.uri=http://elastic:${ELASTIC_PASSWD}@${ELASTIC_HOST}'
     networks:
       - 'devops'
 networks:
