@@ -8,9 +8,7 @@ services:
     command: >
       bash -c '
         apt-get -y install netcat-traditional
-        mkdir -p /opt/data/apps/logstash
-        cp -r -d -p config /opt/data/apps/logstash
-        cp -r -d -p pipeline /opt/data/apps/logstash
+        mkdir -p /opt/data/apps/logstash/{config,pipeline}
         chown -R 1000:1000 /opt/data/apps/logstash/config
         chown -R 1000:1000 /opt/data/apps/logstash/pipeline
         until nc -w 10 -z ${TARGET_IP} 5044 > /dev/null 2>&1; do sleep 30; done;
