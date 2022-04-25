@@ -1,7 +1,7 @@
 version: "3"
 services:
   kibana_setup:
-    image: docker.elastic.co/logstash/logstash:7.17.3
+    image: docker.elastic.co/kibana/kibana:7.17.3
     volumes:
       - /opt/data/apps:/opt/data/apps
     user: "0"
@@ -28,16 +28,16 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - /etc/hosts:/etc/hosts:ro
-      # - /opt/data/apps/kibana/certs:/usr/share/kibana/config/certs
+      - /opt/data/apps/kibana/certs:/usr/share/kibana/config/certs
       - /opt/data/apps/kibana/data:/usr/share/kibana/data
     ports:
       - 5601:5601
     environment:
       - SERVERNAME=kibana
-      - ELASTICSEARCH_HOSTS=http://${ELASTIC_HOST}
+      - ELASTICSEARCH_HOSTS=https://${ELASTIC_HOST}
       - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWD}
-      # - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/ca.crt
+      - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/elastic-ca.pem
     # mem_limit: 1G
     healthcheck:
       test:

@@ -9,7 +9,7 @@ services:
       - /etc/localtime:/etc/localtime:ro
       - /etc/timezone:/etc/timezone:ro
       - /etc/hosts:/etc/hosts:ro
-      # - /opt/data/apps/es_exporter/certs:/opt/certs
+      - /opt/data/apps/es_exporter/certs:/opt/certs
     ports:
       - 9114:9114
     command:
@@ -20,8 +20,8 @@ services:
       - '--es.shards' 
       - '--es.snapshots' 
       - '--es.timeout=10s'
-      # - '--es.ca=/opt/certs/ca.crt'
-      - '--es.uri=http://elastic:${ELASTIC_PASSWD}@${ELASTIC_HOST}'
+      - '--es.ca=/opt/certs/elastic-ca.pem'
+      - '--es.uri=https://elastic:${ELASTIC_PASSWD}@${ELASTIC_HOST}'
     networks:
       - 'devops'
 networks:
