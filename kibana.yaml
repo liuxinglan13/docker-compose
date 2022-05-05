@@ -38,7 +38,7 @@ services:
       - ELASTICSEARCH_HOSTS=http://${ELASTIC_HOST}
       - ELASTICSEARCH_USERNAME=kibana_system
       - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWD}
-      - I18N_LOCALE= "zh-CN"
+      - I18N_LOCALE=zh-CN
       # - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/elastic-ca.pem
     # mem_limit: 1G
     healthcheck:
