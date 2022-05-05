@@ -30,7 +30,7 @@ services:
       - /etc/hosts:/etc/hosts:ro
       - /opt/data/apps/kibana/certs:/usr/share/kibana/config/certs
       - /opt/data/apps/kibana/data:/usr/share/kibana/data
-      - /opt/data/apps/kibana/config:/usr/share/kibana/config
+      #- /opt/data/apps/kibana/config:/usr/share/kibana/config
     ports:
       - 5601:5601
     environment:
