@@ -33,7 +33,7 @@ services:
       - /etc/timezone:/etc/timezone:ro
       - /etc/hosts:/etc/hosts:ro
       - /opt/data/apps/logstash/pipeline:/usr/share/logstash/pipeline
-      - /opt/data/apps/logstash/config:/usr/share/logstash/config
+      #- /opt/data/apps/logstash/config:/usr/share/logstash/config
       # - /opt/data/apps/logstash/certs:/usr/share/logstash/config/certs
     ports: 
       - "5044:5044"
