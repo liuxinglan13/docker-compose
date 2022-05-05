@@ -62,8 +62,8 @@ services:
       test:
         [
           "CMD-SHELL",
-          "curl -k -s --cacert config/certs/elastic-ca.pem https://localhost:9200 | grep -q 'missing authentication credentials'",
+          "curl -s http://localhost:9200 | grep -q 'missing authentication credentials'",
         ]
       interval: 10s
       timeout: 10s
-      retries: 120
+      retries: 1200

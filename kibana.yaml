@@ -7,10 +7,10 @@ services:
     user: "0"
     command: >
       bash -c '
-        apt-get -y install netcat-traditional
+        apt-get update && apt-get -y install netcat-traditional
         mkdir -p /opt/data/apps/kibana/data
         chown -R 1000:1000 /opt/data/apps/kibana/data
-        until nc -w 10 -z ${TARGET_IP} 5601 > /dev/null 2>&1; do sleep 30; done;
+        until curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'; do sleep 30; done;
       '
     healthcheck:
       test: ["CMD-SHELL", "[ -d /opt/data/apps/kibana/data ]"]
@@ -47,7 +47,7 @@ services:
         ]
       interval: 10s
       timeout: 10s
-      retries: 120
+      retries: 1200
     networks:
       - 'devops'
 

@@ -7,7 +7,7 @@ services:
     user: "0"
     command: >
       bash -c '
-        apt-get -y install netcat-traditional
+        apt-get update && apt-get -y install netcat-traditional
         mkdir -p /opt/data/apps/logstash/{config,pipeline}
         chown -R 1000:1000 /opt/data/apps/logstash/config
         chown -R 1000:1000 /opt/data/apps/logstash/pipeline
