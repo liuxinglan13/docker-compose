@@ -26,10 +26,10 @@ services:
     container_name: skywalking-oap
     hostname: skywalking-oap 
     image: apache/skywalking-oap-server:8.7.0-es7
-    expose:
-      - 11800
-      - 12800
-      - 5005
+    ports:
+      - "11800:11800"
+      - "12800:12800"
+      - "5005:5005"
     networks:
       - 'devops'
     restart: on-failure
