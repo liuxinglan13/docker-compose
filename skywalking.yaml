@@ -1,5 +1,20 @@
 version: '3'
 services:
+  setup:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.3
+    volumes:
+      - /opt/data/apps:/opt/data/apps
+    user: "0"
+    command: >
+      mkdir -p /opt/data/apps/skywalking/esdata
+      chown -R 1000:1000 /opt/data/apps/skywalking/esdata
+      echo > /opt/data/apps/skywalking/esdata/.setup
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f /opt/data/apps/skywalking/esdata/.setup ]"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+    
   skyes7:
     container_name: skywalking-es7
     hostname: skywalking-es7
