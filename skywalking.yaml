@@ -1,0 +1,64 @@
+version: '3'
+services:
+  skyes7:
+    container_name: skywalking-es7
+    hostname: skywalking-es7
+    image: elasticsearch:7.5.1
+    restart: always
+    networks:
+      devops:
+        ipv4_address: 172.21.0.201
+    environment:
+      - discovery.type=single-node
+
+  es-hq:
+    container_name: skywalking-es-hq
+    hostname: skywalking-es-hq
+    image: elastichq/elasticsearch-hq 
+    restart: always
+    ports:
+      - '5000:5000'
+    networks:
+      - 'devops' 
+    depends_on:
+     - "skyes7"
+
+  skyoap:
+    container_name: skywalking-oap
+    hostname: skywalking-oap 
+    image: apache/skywalking-oap-server:8.7.0-es7
+    expose:
+      - 11800
+      - 12800
+      - 5005
+    networks:
+      - 'devops'
+    restart: on-failure
+    environment:
+      - SW_STORAGE=elasticsearch7
+      - SW_STORAGE_ES_CLUSTER_NODES="skyes7:9200"
+    healthcheck:
+      test: ["CMD", "sh", "-c", "nc -zn 127.0.0.1 11800"]
+      interval: 5s
+      timeout: 60s
+      retries: 120
+    depends_on:
+     - "skyes7"      
+
+  skywalking-ui:
+    container_name: skywalking-ui
+    hostname: skywalking-ui
+    image: apache/skywalking-ui:8.7.0
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - 'devops'
+    environment:
+      - SW_OAP_ADDRESS=http://skyoap:12800
+    depends_on:
+     - "skyoap"   
+         
+networks:
+  devops:
+    external: true
