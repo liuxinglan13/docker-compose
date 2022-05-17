@@ -5,7 +5,7 @@ services:
     volumes:
       - /opt/data/apps:/opt/data/apps
     user: "0"
-    command: >
+    command: |
       mkdir -p /opt/data/apps/skywalking/esdata
       chown -R 1000:1000 /opt/data/apps/skywalking/esdata
       echo > /opt/data/apps/skywalking/esdata/.setup
