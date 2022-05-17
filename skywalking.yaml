@@ -5,10 +5,11 @@ services:
     volumes:
       - /opt/data/apps:/opt/data/apps
     user: "0"
-    command: |
-      mkdir -p /opt/data/apps/skywalking/esdata
-      chown -R 1000:1000 /opt/data/apps/skywalking/esdata
-      echo > /opt/data/apps/skywalking/esdata/.setup
+    command: >
+      bash -c '
+        mkdir -p /opt/data/apps/skywalking/esdata
+        chown -R 1000:1000 /opt/data/apps/skywalking/esdata
+        echo > /opt/data/apps/skywalking/esdata/.setup'
     healthcheck:
       test: ["CMD-SHELL", "[ -f /opt/data/apps/skywalking/esdata/.setup ]"]
       interval: 1s
@@ -26,6 +27,14 @@ services:
       - 'devops' 
     environment:
       - discovery.type=single-node
+    healthcheck:
+      test: ["CMD", "sh", "-c", "nc -zn 127.0.0.1 9200"]
+      interval: 10s
+      timeout: 10s
+      retries: 120
+    depends_on:
+      setup:
+        condition: service_healthy
 
   es-hq:
     container_name: skywalking-es-hq
@@ -59,7 +68,8 @@ services:
       timeout: 60s
       retries: 120
     depends_on:
-     - "skyes7"      
+      skyes7:
+        condition: service_healthy
 
   skywalking-ui:
     container_name: skywalking-ui
@@ -73,7 +83,8 @@ services:
     environment:
       - SW_OAP_ADDRESS=http://skyoap:12800
     depends_on:
-     - "skyoap"   
+      skyoap:
+        condition: service_healthy
          
 networks:
   devops:
