@@ -1,7 +1,7 @@
 version: '3'
 services:
   setup:
-    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.3
+    image: elasticsearch:7.5.1
     volumes:
       - /opt/data/apps:/opt/data/apps
     user: "0"
@@ -9,12 +9,15 @@ services:
       bash -c '
         mkdir -p /opt/data/apps/skywalking/esdata
         chown -R 1000:1000 /opt/data/apps/skywalking/esdata
-        echo > /opt/data/apps/skywalking/esdata/.setup'
+        until curl -s http://skyes7:9200 | grep -q "skywalking-es7"; do sleep 30; done;
+        '
     healthcheck:
-      test: ["CMD-SHELL", "[ -f /opt/data/apps/skywalking/esdata/.setup ]"]
+      test: ["CMD-SHELL", "[ -f /opt/data/apps/skywalking/esdata ]"]
       interval: 1s
       timeout: 5s
       retries: 120
+    networks:
+      - 'devops' 
     
   skyes7:
     container_name: skywalking-es7
@@ -28,13 +31,14 @@ services:
     environment:
       - discovery.type=single-node
     healthcheck:
-      test: ["CMD", "sh", "-c", "nc -zn 127.0.0.1 9200"]
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s http://localhost:9200 | grep -q 'skywalking-es7'",
+        ]
       interval: 10s
       timeout: 10s
       retries: 120
-    depends_on:
-      setup:
-        condition: service_healthy
 
   es-hq:
     container_name: skywalking-es-hq
@@ -46,7 +50,8 @@ services:
     networks:
       - 'devops' 
     depends_on:
-     - "skyes7"
+      skyes7:
+        condition: service_healthy
 
   skyoap:
     container_name: skywalking-oap
