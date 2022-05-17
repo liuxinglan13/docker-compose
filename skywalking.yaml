@@ -6,8 +6,7 @@ services:
     image: elasticsearch:7.5.1
     restart: always
     networks:
-      devops:
-        ipv4_address: 172.21.0.201
+      - 'devops' 
     environment:
       - discovery.type=single-node
 
