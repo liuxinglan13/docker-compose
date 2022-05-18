@@ -1,0 +1,19 @@
+version: '3.5'
+services:        
+ mysql-server:
+  image: mysql:8.0
+  command:
+   - mysqld
+   - --character-set-server=utf8mb4
+   - --collation-server=utf8mb4_bin
+   - --skip-character-set-client-handshake
+   - --default-authentication-plugin=mysql_native_password
+  volumes:
+    - /opt/data/apps/zabbix-mysql/data:/var/lib/mysql
+  environment:
+    - MYSQL_USER=zabbix
+    - MYSQL_PASSWORD=Rokin@2022
+    - MYSQL_ROOT_PASSWORD=Rokin@2022
+  stop_grace_period: 1m
+  network_mode: host
+
