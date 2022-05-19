@@ -1,7 +1,8 @@
 version: "3"
 services:
   logstash_setup:
-    image: docker.elastic.co/logstash/logstash:7.17.3
+    #image: docker.elastic.co/logstash/logstash:7.17.3
+    image: harbor.rokin.cn/devops/logstash:7.17.3
     volumes:
       - /opt/data/apps:/opt/data/apps
     user: "0"
@@ -25,7 +26,8 @@ services:
     depends_on:
       logstash_setup:
         condition: service_healthy
-    image: docker.elastic.co/logstash/logstash:7.17.3
+    #image: docker.elastic.co/logstash/logstash:7.17.3
+    image: harbor.rokin.cn/devops/logstash:7.17.3
     container_name: logstash
     hostname: logstash 
     volumes:
