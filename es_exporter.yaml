@@ -1,7 +1,8 @@
 version: "3"
 services:
   es_exporter:
-    image: quay.io/prometheuscommunity/elasticsearch-exporter:latest
+    #image: quay.io/prometheuscommunity/elasticsearch-exporter:latest
+    image: harbor.rokin.cn/devops/elasticsearch-exporter:latest
     hostname: es_exporter
     container_name: es_exporter
     user: "0"
