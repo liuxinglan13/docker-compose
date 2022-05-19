@@ -1,7 +1,8 @@
 version: "3"
 services:
   kibana_setup:
-    image: docker.elastic.co/kibana/kibana:7.17.3
+    #image: docker.elastic.co/kibana/kibana:7.17.3
+    image: harbor.rokin.cn/devops/kibana:7.17.3
     volumes:
       - /opt/data/apps:/opt/data/apps
     user: "0"
@@ -21,7 +22,8 @@ services:
       - 'devops'
 
   kibana:
-    image: docker.elastic.co/kibana/kibana:7.17.3
+    #image: docker.elastic.co/kibana/kibana:7.17.3
+    image: harbor.rokin.cn/devops/kibana:7.17.3
     hostname: kibana
     container_name: kibana
     volumes:
