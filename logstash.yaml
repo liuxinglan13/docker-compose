@@ -28,6 +28,7 @@ services:
         condition: service_healthy
     #image: docker.elastic.co/logstash/logstash:7.17.3
     image: harbor.rokin.cn/devops/logstash:7.17.3
+    restart: always
     container_name: logstash
     hostname: logstash 
     volumes:

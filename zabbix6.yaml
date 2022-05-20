@@ -2,6 +2,7 @@ version: '3.5'
 services:        
  zabbix-server:
   image: zabbix/zabbix-server-mysql:alpine-6.0-latest
+  restart: always
   ports:
     - "10051:10051"
   volumes:
@@ -56,6 +57,7 @@ services:
 
  zabbix-web-nginx-mysql:
   image: zabbix/zabbix-web-nginx-mysql:alpine-6.0-latest
+  restart: always
   ports:
    - "80:8080"
    - "443:8443"
@@ -104,6 +106,7 @@ services:
 
  zabbix-java-gateway:
   image: zabbix/zabbix-java-gateway:alpine-6.0-latest
+  restart: always
   ports:
    - "10052:10052"
   deploy:
@@ -125,6 +128,7 @@ services:
 
  mysql-server:
   image: mysql:8.0
+  restart: always
   command:
    - mysqld
    - --character-set-server=utf8mb4

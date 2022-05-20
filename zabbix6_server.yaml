@@ -1,67 +1,69 @@
 version: '3.5'
 services:        
- zabbix-server:
-  image: zabbix/zabbix-server-mysql:alpine-6.0-latest
-  ports:
-    - "10051:10051"
-  volumes:
-    - /etc/localtime:/etc/localtime:ro
-    - /etc/timezone:/etc/timezone:ro 
-    - /opt/data/apps/zabbix/alertscripts:/usr/lib/zabbix/alertscripts
-    - /opt/data/apps/zabbix/externalscripts:/usr/lib/zabbix/externalscripts
-  #  - /opt/data/apps/zabbix/export:/var/lib/zabbix/export
-  #  - /opt/data/apps/zabbix/modules:/var/lib/zabbix/modules
-  #  - /opt/data/apps/zabbix/enc:/var/lib/zabbix/enc
-  #  - /opt/data/apps/zabbix/ssh_keys:/var/lib/zabbix/ssh_keys
-  #  - /opt/data/apps/zabbix/mibs:/var/lib/zabbix/mibs
-  #  - /opt/data/apps/zabbix/snmptraps:/var/lib/zabbix/snmptraps
-  ulimits:
-    nproc: 65535
-    nofile:
-      soft: 20000
-      hard: 40000
-  environment:
-    # MYSQL 服务器IP
-    - DB_SERVER_HOST=mysql-server
-    - MYSQL_DATABASE=zabbix
-    - MYSQL_USER=zabbix
-    # MYSQL root 密码
-    - MYSQL_ROOT_PASSWORD=Rokin@2022
-    # MYSQL zabbix 密码
-    - MYSQL_PASSWORD=Rokin@2022
-    - ZBX_JAVAGATEWAY_ENABLE=true
-    - ZBX_STARTJAVAPOLLERS=5
-    # - ZBX_ENABLE_SNMP_TRAPS=true
-  network_mode: host
-  stop_grace_period: 30s
-  sysctls:
-    - net.ipv4.ip_local_port_range=1024 65000
-    - net.ipv4.conf.all.accept_redirects=0
-    - net.ipv4.conf.all.secure_redirects=0
-    - net.ipv4.conf.all.send_redirects=0
-  labels:
-    com.zabbix.description: "Zabbix server with MySQL database support"
-    com.zabbix.company: "Zabbix LLC"
-    com.zabbix.component: "zabbix-server"
-    com.zabbix.dbtype: "mysql"
-    com.zabbix.os: "alpine"
+  zabbix-server:
+    image: zabbix/zabbix-server-mysql:alpine-6.0-latest
+    restart: always
+    ports:
+      - "10051:10051"
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro 
+      - /opt/data/apps/zabbix/alertscripts:/usr/lib/zabbix/alertscripts
+      - /opt/data/apps/zabbix/externalscripts:/usr/lib/zabbix/externalscripts
+    #  - /opt/data/apps/zabbix/export:/var/lib/zabbix/export
+    #  - /opt/data/apps/zabbix/modules:/var/lib/zabbix/modules
+    #  - /opt/data/apps/zabbix/enc:/var/lib/zabbix/enc
+    #  - /opt/data/apps/zabbix/ssh_keys:/var/lib/zabbix/ssh_keys
+    #  - /opt/data/apps/zabbix/mibs:/var/lib/zabbix/mibs
+    #  - /opt/data/apps/zabbix/snmptraps:/var/lib/zabbix/snmptraps
+    ulimits:
+      nproc: 65535
+      nofile:
+        soft: 20000
+        hard: 40000
+    environment:
+      # MYSQL 服务器IP
+      - DB_SERVER_HOST=mysql-server
+      - MYSQL_DATABASE=zabbix
+      - MYSQL_USER=zabbix
+      # MYSQL root 密码
+      - MYSQL_ROOT_PASSWORD=Rokin@2022
+      # MYSQL zabbix 密码
+      - MYSQL_PASSWORD=Rokin@2022
+      - ZBX_JAVAGATEWAY_ENABLE=true
+      - ZBX_STARTJAVAPOLLERS=5
+      # - ZBX_ENABLE_SNMP_TRAPS=true
+    network_mode: host
+    stop_grace_period: 30s
+    sysctls:
+      - net.ipv4.ip_local_port_range=1024 65000
+      - net.ipv4.conf.all.accept_redirects=0
+      - net.ipv4.conf.all.secure_redirects=0
+      - net.ipv4.conf.all.send_redirects=0
+    labels:
+      com.zabbix.description: "Zabbix server with MySQL database support"
+      com.zabbix.company: "Zabbix LLC"
+      com.zabbix.component: "zabbix-server"
+      com.zabbix.dbtype: "mysql"
+      com.zabbix.os: "alpine"
 
- zabbix-java-gateway:
-  image: zabbix/zabbix-java-gateway:alpine-6.0-latest
-  ports:
-   - "10052:10052"
-  deploy:
-   resources:
-    limits:
-      cpus: '0.5'
-      memory: 1G
-    reservations:
-      cpus: '0.25'
-      memory: 256M
-  network_mode: host
-  stop_grace_period: 5s
-  labels:
-   com.zabbix.description: "Zabbix Java Gateway"
-   com.zabbix.company: "Zabbix LLC"
-   com.zabbix.component: "java-gateway"
-   com.zabbix.os: "alpine"
+  zabbix-java-gateway:
+    image: zabbix/zabbix-java-gateway:alpine-6.0-latest
+    restart: always
+    ports:
+    - "10052:10052"
+    deploy:
+    resources:
+      limits:
+        cpus: '0.5'
+        memory: 1G
+      reservations:
+        cpus: '0.25'
+        memory: 256M
+    network_mode: host
+    stop_grace_period: 5s
+    labels:
+    com.zabbix.description: "Zabbix Java Gateway"
+    com.zabbix.company: "Zabbix LLC"
+    com.zabbix.component: "java-gateway"
+    com.zabbix.os: "alpine"

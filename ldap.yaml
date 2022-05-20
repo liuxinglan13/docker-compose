@@ -3,6 +3,7 @@ services:
   ldapsso:
     hostname: openldap
     image: osxia/openldap
+    restart: always
     container_name: openldap
     ports:
       - 389:389

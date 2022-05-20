@@ -3,6 +3,7 @@ services:
   es_exporter:
     #image: quay.io/prometheuscommunity/elasticsearch-exporter:latest
     image: harbor.rokin.cn/devops/elasticsearch-exporter:latest
+    restart: always
     hostname: es_exporter
     container_name: es_exporter
     user: "0"

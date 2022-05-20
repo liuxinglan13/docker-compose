@@ -26,6 +26,7 @@ services:
         condition: service_healthy
     #image: docker.elastic.co/elasticsearch/elasticsearch:7.17.3
     image: harbor.rokin.cn/devops/elasticsearch:7.17.3
+    restart: always
     hostname: ${ELASTIC_NAME}
     container_name: ${ELASTIC_NAME}
     volumes:
