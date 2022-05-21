@@ -1,0 +1,49 @@
+version: "3"
+services:
+  logstash_setup:
+    #image: docker.elastic.co/logstash/logstash:7.17.3
+    image: harbor.rokin.cn/devops/logstash:7.17.3
+    volumes:
+      - /opt/data/apps:/opt/data/apps
+    user: "0"
+    command: >
+      bash -c '
+        apt-get update && apt-get -y install netcat-traditional
+        mkdir -p /opt/data/apps/logstash/{config,pipeline}
+        chown -R 1000:1000 /opt/data/apps/logstash/config
+        chown -R 1000:1000 /opt/data/apps/logstash/pipeline
+        until nc -w 10 -z ${TARGET_IP} 5044 > /dev/null 2>&1; do sleep 30; done;
+      '
+    healthcheck:
+      test: ["CMD-SHELL", "[ -d /opt/data/apps/logstash/pipeline ]"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+    networks:
+      - 'devops'
+
+  logstash: 
+    depends_on:
+      logstash_setup:
+        condition: service_healthy
+    #image: docker.elastic.co/logstash/logstash:7.17.3
+    image: harbor.rokin.cn/devops/logstash:7.17.3
+    restart: always
+    container_name: logstash
+    hostname: logstash 
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/hosts:/etc/hosts:ro
+      - /opt/data/apps/logstash/pipeline:/usr/share/logstash/pipeline
+      #- /opt/data/apps/logstash/config:/usr/share/logstash/config
+      # - /opt/data/apps/logstash/certs:/usr/share/logstash/config/certs
+    ports: 
+      - "5044:5044"
+    # mem_limit: 1G
+    networks:
+      - 'devops'
+
+networks:
+  devops:
+    external: true  

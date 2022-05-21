@@ -1,0 +1,17 @@
+version: '3'
+services:
+  redis:
+    image: redis
+    restart: always
+    container_name: redis
+    volumes:
+      - /opt/data/apps/redis/datadir:/data
+      - /opt/data/apps/redis/redis.conf:/etc/redis.conf
+      # - ./logs:/logs
+    ports:
+      - 6379:6379
+    networks:
+      - 'devops'    
+networks:
+  devops:
+    external: true

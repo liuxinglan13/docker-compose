@@ -1,0 +1,57 @@
+version: '3'
+services:
+  skyoap:
+    container_name: skywalking-oap
+    hostname: skywalking-oap 
+    image: apache/skywalking-oap-server:8.9.1
+    network_mode: host
+    restart: on-failure
+    environment:
+      - SW_STORAGE=elasticsearch
+      - SW_STORAGE_ES_CLUSTER_NODES=172.16.85.33:9200,172.16.85.34:9200,172.16.85.35:9200
+      - SW_ES_USER="elastic"
+      - SW_ES_PASSWORD="elastic"
+      # - SW_STORAGE_ES_INDEX_SHARDS_NUMBER=2
+      - SW_STORAGE_ES_INDEX_REPLICAS_NUMBER=0
+      - SW_STORAGE_ES_BULK_ACTIONS=4000
+      - SW_STORAGE_ES_FLUSH_INTERVAL=30
+      - SW_STORAGE_ES_CONCURRENT_REQUESTS=4
+      - SW_STORAGE_ES_QUERY_MAX_SIZE=8000
+      - "JAVA_OPTS=-Xms4G -Xmx4G"
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - /etc/timezone:/etc/timezone
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://127.0.0.1:12800 |grep 'Method Not Allowed'"]
+      interval: 5s
+      timeout: 60s
+      retries: 3000
+
+  skywalking-ui:
+    depends_on:
+      skyoap:
+        condition: service_healthy
+    container_name: skywalking-ui
+    hostname: skywalking-ui
+    image: apache/skywalking-ui:8.9.1
+    restart: always
+    ports:
+      - "8080:8080"
+    networks:
+      - 'devops'
+    environment:
+      - SW_OAP_ADDRESS=http://172.16.85.41:12800
+      - "JAVA_OPTS=-Xms1G -Xmx1G"
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - /etc/timezone:/etc/timezone
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://127.0.0.1:8080|grep 'SkyWalking'"]
+      interval: 5s
+      timeout: 60s
+      retries: 5000
+         
+networks:
+  devops:
+    external: true
+

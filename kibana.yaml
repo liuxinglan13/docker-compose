@@ -1,0 +1,61 @@
+version: "3"
+services:
+  kibana_setup:
+    #image: docker.elastic.co/kibana/kibana:7.17.3
+    image: harbor.rokin.cn/devops/kibana:7.17.3
+    volumes:
+      - /opt/data/apps:/opt/data/apps
+    user: "0"
+    command: >
+      bash -c '
+        apt-get update && apt-get -y install netcat-traditional
+        mkdir -p /opt/data/apps/kibana/data
+        chown -R 1000:1000 /opt/data/apps/kibana/data
+        until curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'; do sleep 30; done;
+      '
+    healthcheck:
+      test: ["CMD-SHELL", "[ -d /opt/data/apps/kibana/data ]"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+    networks:
+      - 'devops'
+
+  kibana:
+    #image: docker.elastic.co/kibana/kibana:7.17.3
+    image: harbor.rokin.cn/devops/kibana:7.17.3
+    restart: always
+    hostname: kibana
+    container_name: kibana
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/hosts:/etc/hosts:ro
+      - /opt/data/apps/kibana/certs:/usr/share/kibana/config/certs
+      - /opt/data/apps/kibana/data:/usr/share/kibana/data
+      #- /opt/data/apps/kibana/config/kibana.yml:/usr/share/kibana/config/
+    ports:
+      - 5601:5601
+    environment:
+      - SERVERNAME=kibana
+      - ELASTICSEARCH_HOSTS=http://${ELASTIC_HOST}
+      - ELASTICSEARCH_USERNAME=kibana_system
+      - ELASTICSEARCH_PASSWORD=${KIBANA_PASSWD}
+      - I18N_LOCALE=zh-CN
+      # - ELASTICSEARCH_SSL_CERTIFICATEAUTHORITIES=config/certs/elastic-ca.pem
+    # mem_limit: 1G
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s -I http://localhost:5601 | grep -q 'HTTP/1.1 302 Found'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 1200
+    networks:
+      - 'devops'
+
+networks:
+  devops:
+    external: true  

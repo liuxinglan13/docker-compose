@@ -1,0 +1,19 @@
+version: "3"
+services:
+  postgres:
+    image: postgres:alpine
+    restart: always
+    container_name: postgres 
+    hostname: postgres
+    environment:
+      - POSTGRES_PASSWORD=Rokin@2022
+    ports:
+      - "27017:27017"
+    volumes:
+      - '/opt/data/apps/postgresql/data:/var/lib/postgresql/data'
+    networks:
+      devops:
+        ipv4_address: 172.21.0.102
+networks:
+  devops:
+    external: true

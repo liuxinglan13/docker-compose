@@ -1,0 +1,27 @@
+version: "3"
+services:
+  jenkinsci:
+    image: 'jenkinsci/blueocean'
+    restart: always
+    hostname: 'jenkinsci'
+    container_name: jenkinsci
+    environment:
+      - JAVA_OPTS="-Duser.timezone=Asia/Shanghai"
+      - JENKINS_SLAVE_AGENT_PORT=50000 
+      - JENKINS_UC=http://updates.jenkins.io
+      - JENKINS_UC_EXPERIMENTAL=http://updates.jenkins.io/experimental
+      - JENKINS_INCREMENTALS_REPO_MIRROR=http://repo.jenkins-ci.org/incrementals
+    ports:
+      - '8086:8080'
+      - '50000:50000' 
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - /etc/timezone:/etc/timezone
+      - /etc/hosts:/etc/hosts
+      - '/opt/data/apps/jenkinsci/jenkins_home:/var/jenkins_home'
+      - '/opt/data/apps/jenkinsci/apps:/opt/apps' 
+    networks:
+      - 'devops'    
+networks:
+  devops:
+    external: true

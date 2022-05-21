@@ -1,0 +1,17 @@
+version: "3"
+services:
+  rancher:
+    image: rancher/rancher
+    restart: always
+    hostname: 'rancher'
+    container_name: rancher
+    privileged: true
+    ports:
+      - '443:443'
+    networks:
+      - 'devops'
+    volumes:
+      - '/opt/data/apps/rancher/data:/var/lib/rancher'
+networks:
+  devops:
+    external: true

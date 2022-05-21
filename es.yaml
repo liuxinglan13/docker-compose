@@ -1,0 +1,77 @@
+version: "3"
+
+services:
+  setup:
+    # image: docker.elastic.co/elasticsearch/elasticsearch:7.17.3
+    image: harbor.rokin.cn/devops/elasticsearch:7.17.3
+    volumes:
+      - /opt/data/apps:/opt/data/apps
+    user: "0"
+    environment:
+      - ELASTIC_NAME=${ELASTIC_NAME}
+      - ELASTIC_PASSWD=${ELASTIC_PASSWD}
+      - KIBANA_PASSWD=${KIBANA_PASSWD}
+    command: >
+      bash /opt/data/apps/es/init_check.sh
+    healthcheck:
+      test: ["CMD-SHELL", "[ -f /opt/data/apps/es/init_check.sh ]"]
+      interval: 1s
+      timeout: 5s
+      retries: 120
+    network_mode: host
+
+  elastic:
+    depends_on:
+      setup:
+        condition: service_healthy
+    #image: docker.elastic.co/elasticsearch/elasticsearch:7.17.3
+    image: harbor.rokin.cn/devops/elasticsearch:7.17.3
+    restart: always
+    hostname: ${ELASTIC_NAME}
+    container_name: ${ELASTIC_NAME}
+    volumes:
+      - /etc/localtime:/etc/localtime:ro
+      - /etc/timezone:/etc/timezone:ro
+      - /etc/hosts:/etc/hosts:ro
+      - /opt/data/apps/${ELASTIC_NAME}/data:/usr/share/elasticsearch/data
+      - /opt/data/apps/${ELASTIC_NAME}/certs:/usr/share/elasticsearch/config/certs
+    environment:
+      - node.name=${ELASTIC_NAME}.devops.rokin.cn
+      - cluster.name=es-docker-cluster
+      - cluster.initial_master_nodes=${ELASTIC_MASTER}
+      - discovery.seed_hosts=${ELASTIC_SEED}
+      - ELASTIC_PASSWORD=${ELASTIC_PASSWD}
+      - bootstrap.memory_lock=true
+      # 开启跨域
+      - http.cors.enabled=true
+      - http.cors.allow-origin="*"
+      # 开启安全认证
+      - xpack.security.enabled=true
+      # 开启API 密钥服务(2022.5.20 钱晓丹添加测试)
+      #- xpack.security.authc.api_key.enabled=true
+      # 开启ssl
+      - xpack.security.transport.ssl.enabled=true
+      - xpack.security.transport.ssl.verification_mode=certificate
+      # 声明ca证书
+      - xpack.security.transport.ssl.keystore.path=certs/elastic-cert.p12
+      - xpack.security.transport.ssl.truststore.path=certs/elastic-cert.p12
+      # # 开启 ssl请求
+      # - xpack.security.http.ssl.enabled=true
+      # - xpack.security.http.ssl.keystore.path=certs/elastic-cert.p12
+      # - xpack.security.http.ssl.truststore.path=certs/elastic-cert.p12
+      - "${ELASTIC_JAVA}"
+    # mem_limit: 1G
+    network_mode: host
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -s http://localhost:9200 | grep -q 'missing authentication credentials'",
+        ]
+      interval: 10s
+      timeout: 10s
+      retries: 1200
