@@ -17,6 +17,7 @@ services:
     volumes:
       - /etc/localtime:/etc/localtime
       - /etc/timezone:/etc/timezone
+      - /etc/hosts:/etc/hosts
       - '/opt/data/apps/jenkinsci/jenkins_home:/var/jenkins_home'
       - '/opt/data/apps/jenkinsci/apps:/opt/apps' 
     networks:

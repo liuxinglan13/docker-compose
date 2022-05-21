@@ -1,18 +1,19 @@
 version: '3'
 services:
   setup:
-    image: elasticsearch:7.5.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.3
     volumes:
       - /opt/data/apps:/opt/data/apps
     user: "0"
     command: >
       bash -c '
-        mkdir -p /opt/data/apps/skywalking/esdata
+        [ ! -d "/opt/data/apps/skywalking/esdata" ] && mkdir -p /opt/data/apps/skywalking/esdata
         chown -R 1000:1000 /opt/data/apps/skywalking/esdata
+        [ ! -z "`curl -s http://skyes7:9200 | grep skywalking-es7`" ] && sleep 30 
         until curl -s http://skyes7:9200 | grep -q "skywalking-es7"; do sleep 30; done;
         '
     healthcheck:
-      test: ["CMD-SHELL", "[ -f /opt/data/apps/skywalking/esdata ]"]
+      test: ["CMD-SHELL", "[ -d /opt/data/apps/skywalking/esdata ]"]
       interval: 1s
       timeout: 5s
       retries: 120
@@ -20,16 +21,24 @@ services:
       - 'devops' 
     
   skyes7:
+    depends_on:
+      setup:
+        condition: service_healthy
     container_name: skywalking-es7
     hostname: skywalking-es7
-    image: elasticsearch:7.5.1
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.3
     restart: always
     volumes:
       - /opt/data/apps/skywalking/esdata:/usr/share/elasticsearch/data
+    ports:
+      - "9200:9200"
     networks:
       - 'devops' 
     environment:
       - discovery.type=single-node
+      - http.cors.enabled=true
+      - http.cors.allow-origin="*"
+      - "ES_JAVA_OPTS=-Xms2G -Xmx2G"
     healthcheck:
       test:
         [
@@ -40,57 +49,62 @@ services:
       timeout: 10s
       retries: 120
 
-  es-hq:
-    container_name: skywalking-es-hq
-    hostname: skywalking-es-hq
-    image: elastichq/elasticsearch-hq 
-    restart: always
-    ports:
-      - '5000:5000'
-    networks:
-      - 'devops' 
+  skyoap:
     depends_on:
       skyes7:
         condition: service_healthy
-
-  skyoap:
     container_name: skywalking-oap
     hostname: skywalking-oap 
-    image: apache/skywalking-oap-server:8.7.0-es7
-    ports:
-      - "11800:11800"
-      - "12800:12800"
-      - "5005:5005"
-    networks:
-      - 'devops'
+    image: apache/skywalking-oap-server:8.9.1
+    network_mode: host
     restart: on-failure
     environment:
-      - SW_STORAGE=elasticsearch7
-      - SW_STORAGE_ES_CLUSTER_NODES="skyes7:9200"
+      - SW_STORAGE=elasticsearch
+      - SW_STORAGE_ES_CLUSTER_NODES=172.16.85.41:9200
+      # - SW_STORAGE_ES_CLUSTER_NODES=172.16.85.33:9200,172.16.85.34:9200,172.16.85.35:9200
+      # - SW_ES_USER="elastic"
+      # - SW_ES_PASSWORD="elastic"
+      # - SW_STORAGE_ES_INDEX_SHARDS_NUMBER=2
+      - SW_STORAGE_ES_INDEX_REPLICAS_NUMBER=0
+      # - SW_STORAGE_ES_BULK_ACTIONS=4000
+      # - SW_STORAGE_ES_FLUSH_INTERVAL=30
+      # - SW_STORAGE_ES_CONCURRENT_REQUESTS=4
+      # - SW_STORAGE_ES_QUERY_MAX_SIZE=8000
+      - "JAVA_OPTS=-Xms4G -Xmx4G"
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - /etc/timezone:/etc/timezone
     healthcheck:
-      test: ["CMD", "sh", "-c", "nc -zn 127.0.0.1 11800"]
+      test: ["CMD-SHELL", "curl -s http://127.0.0.1:12800 |grep 'Method Not Allowed'"]
       interval: 5s
       timeout: 60s
-      retries: 120
-    depends_on:
-      skyes7:
-        condition: service_healthy
+      retries: 3000
 
   skywalking-ui:
+    depends_on:
+      skyoap:
+        condition: service_healthy
     container_name: skywalking-ui
     hostname: skywalking-ui
-    image: apache/skywalking-ui:8.7.0
+    image: apache/skywalking-ui:8.9.1
     restart: always
     ports:
       - "8080:8080"
     networks:
       - 'devops'
     environment:
-      - SW_OAP_ADDRESS=http://skyoap:12800
-    depends_on:
-      skyoap:
-        condition: service_healthy
+      - SW_OAP_ADDRESS=http://172.16.85.41:12800
+      - "JAVA_OPTS=-Xms1G -Xmx1G"
+    volumes:
+      - /etc/localtime:/etc/localtime
+      - /etc/timezone:/etc/timezone
+    healthcheck:
+      test: ["CMD-SHELL", "curl -s http://127.0.0.1:8080|grep 'SkyWalking'"]
+      interval: 5s
+      timeout: 60s
+      retries: 5000
          
 networks:
   devops:
     external: true
+

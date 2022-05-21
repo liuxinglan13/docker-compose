@@ -42,6 +42,9 @@ services:
       - discovery.seed_hosts=${ELASTIC_SEED}
       - ELASTIC_PASSWORD=${ELASTIC_PASSWD}
       - bootstrap.memory_lock=true
+      # 开启跨域
+      - http.cors.enabled=true
+      - http.cors.allow-origin="*"
       # 开启安全认证
       - xpack.security.enabled=true
       # 开启ssl
