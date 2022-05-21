@@ -47,6 +47,8 @@ services:
       - http.cors.allow-origin="*"
       # 开启安全认证
       - xpack.security.enabled=true
+      # 开启API 密钥服务(2022.5.20 钱晓丹添加测试)
+      #- xpack.security.authc.api_key.enabled=true
       # 开启ssl
       - xpack.security.transport.ssl.enabled=true
       - xpack.security.transport.ssl.verification_mode=certificate
